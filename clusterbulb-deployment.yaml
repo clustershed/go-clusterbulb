@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clusterbulb-monitor
+---
 # service-account.yaml
 apiVersion: v1
 kind: ServiceAccount

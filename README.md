@@ -8,12 +8,13 @@ It watches cluster nodes, pods, and warning events, checks GitHub for open PRs, 
 ![Myrmidon Soldier Holding a Light Bulb](https://raw.githubusercontent.com/clustershed/images/refs/heads/main/myrmidon-bulb-anim.webp)
 
 # 🎯 Overview
+| Color | Meaning |
+|------:|:--------|
+| 🟢 **Green** | Cluster is healthy |
+| 🔵 **Blue** | Open GitHub pull requests |
+| 🔴 **Red** | Detected issues in cluster |
+| 🔴🔵 **Blinking Red/Blue** | Both open PRs and detected issues |
 
-| ---------------------: | ------------------------------------------------------------------- |
-|             🟢 Green	 | Cluster is healthy               |
-|             🔵 Blue	 | Open GitHub pull requests               |
-|             🔴 Red	 | Detected issues in cluster               |
-| 🔴🔵 Blinking Red/Blue | Blinking Red/Blue	Both open PRs and detected issues              |
 
 ClusterBulb is ambient observability. A simple, physical indicator of cluster state.
 

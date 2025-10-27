@@ -9,20 +9,21 @@ It watches cluster nodes, pods, and warning events, checks GitHub for open PRs, 
 
 # 🎯 Overview
 
-🟢 Green	Cluster is healthy
-🔵 Blue	Open GitHub pull requests
-🔴 Red	Detected issues in cluster
-🔴🔵 Blinking Red/Blue	Both open PRs and detected issues
+| ---------------------: | ------------------------------------------------------------------- |
+|             🟢 Green	 | Cluster is healthy               |
+|             🔵 Blue	 | Open GitHub pull requests               |
+|             🔴 Red	 | Detected issues in cluster               |
+| 🔴🔵 Blinking Red/Blue | Blinking Red/Blue	Both open PRs and detected issues              |
 
-ClusterBulb is ambient observability — a simple, physical indicator of cluster state.
+ClusterBulb is ambient observability. A simple, physical indicator of cluster state.
 
 # 🧠 How it works
 
-Runs as a non-root pod inside Kubernetes (in-cluster K8s client).
-Monitors Nodes, Pods, and Warning Events using the Kubernetes API.
-Polls GitHub for open PRs (configurable interval).
-Sends color/brightness commands to the Home Assistant REST API to update a light entity.
-Maintains minimal permissions (read-only) via RBAC.
+- Runs as a non-root pod inside Kubernetes (in-cluster K8s client).
+- Monitors Nodes, Pods, and Warning Events using the Kubernetes API.
+- Polls GitHub for open PRs (configurable interval).
+- Sends color/brightness commands to the Home Assistant REST API to update a light entity.
+- Maintains minimal permissions (read-only) via RBAC.
 
 # 🔧 Configuration / Environment variables
 
@@ -41,12 +42,12 @@ Secrets `HA_TOKEN` and `GH_TOKEN` should be provided via a Kubernetes Secret nam
 
 # 🛡 Security notes
 
-The binary exits if run as root (UID 0).
-Pod runs as non-root (runAsUser: 1000, fsGroup: 1000).
-allowPrivilegeEscalation: false is set.
-RBAC is read-only for the core and apps API groups.
-Secrets are consumed via valueFrom: secretKeyRef.
-Do not store tokens in plaintext in your repository!
+- The binary exits if run as root (UID 0).
+- Pod runs as non-root (runAsUser: 1000, fsGroup: 1000).
+- allowPrivilegeEscalation: false is set.
+- RBAC is read-only for the core and apps API groups.
+- Secrets are consumed via valueFrom: secretKeyRef.
+- Do not store tokens in plaintext in your repository!
 
 
 

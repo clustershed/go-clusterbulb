@@ -18,9 +18,15 @@ metadata:
 rules:
 # The empty string "" refers to the core (legacy) API group, which includes built-in resources like pods, services, configmaps, nodes, etc.
 # The "apps" API group includes resources like deployments, statefulsets, daemonsets, etc.
-- apiGroups: ["","apps"]
-  resources: ["*"]
-  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+    - nodes/status
+    - pods/status
+    - events
+  verbs:
+    - get
+    - list
+    - watch
 ---
 # cluster-role-binding.yaml
 apiVersion: rbac.authorization.k8s.io/v1

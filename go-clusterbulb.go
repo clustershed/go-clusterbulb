@@ -22,7 +22,7 @@
 //
 // Project: go-clusterbulb
 // Author: ClusterShed / Chris Mayenschein
-// Version: 0.0.2
+// Version: 0.0.3
 //
 // Description:
 // go-clusterbulb is a Kubernetes cluster health monitoring tool that integrates with Home Assistant to visually indicate the health status of the cluster using a smart bulb. It checks for node and pod health, warning events, and open GitHub pull requests, updating the bulb color accordingly.

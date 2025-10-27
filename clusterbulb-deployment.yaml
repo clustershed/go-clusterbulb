@@ -42,6 +42,7 @@ roleRef:
   name: clusterbulb-monitor-clusterrole
   apiGroup: rbac.authorization.k8s.io
 ---
+# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,7 +66,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: clusterbulb
-          image: ghcr.io/clustershed/go-clusterbulb:v0.0.2
+          image: ghcr.io/clustershed/go-clusterbulb:v0.0.3
           env:
           - name: HA_TOKEN
             valueFrom:

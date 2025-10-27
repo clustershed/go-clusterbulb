@@ -48,48 +48,41 @@ spec:
       labels:
         app: clusterbulb
     spec:
-      serviceAccountName: clusterbulb
-      containers:
-      - name: clusterbulb
-        image: ghcr.io/clustershed/go-clusterbulb:latest
-        imagePullPolicy: Always
-        env:
-        - name: HA_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: clusterbulb-secrets
-              key: ha-token
-        - name: HA_URL
-          value: "http://192.168.42.201:8123"  # adjust to your HA URL
-        - name: HA_LIGHT_ENTITY_ID
-          value: "light.cync_full_color_a19_5"  # adjust to your light entity
-        - name: HA_LIGHT_BRIGHTNESS
-          value: "255"
-        - name: GH_OWNER
-          value: "clustershed"
-        - name: GH_REPO
-          value: "myrmidon-k3s"
-        - name: GH_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: clusterbulb-secrets
-              key: gh-token
-        - name: GH_PR_CHECK_INTERVAL
-          value: "300"
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "200m"
-            memory: "256Mi"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-      restartPolicy: Always
       securityContext:
-        fsGroup: 2000
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: clusterbulb
+          image: ghcr.io/clustershed/go-clusterbulb:v0.0.2
+          env:
+          - name: HA_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: clusterbulb-secrets
+                key: ha-token
+          - name: HA_URL
+            value: "http://192.168.42.201:8123"  # adjust to your HA URL
+          - name: HA_LIGHT_ENTITY_ID
+            value: "light.cync_full_color_a19_5"  # adjust to your light entity
+          - name: HA_LIGHT_BRIGHTNESS
+            value: "255"
+          - name: GH_OWNER
+            value: "clustershed"
+          - name: GH_REPO
+            value: "myrmidon-k3s"
+          - name: GH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: clusterbulb-secrets
+                key: gh-token
+          - name: GH_PR_CHECK_INTERVAL
+            value: "300"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            allowPrivilegeEscalation: false

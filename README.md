@@ -46,7 +46,7 @@ Secrets `HA_TOKEN` and `GH_TOKEN` should be provided via a Kubernetes Secret nam
 - The binary exits if run as root (UID 0).
 - Pod runs as non-root (runAsUser: 1000, fsGroup: 1000).
 - allowPrivilegeEscalation: false is set.
-- RBAC is read-only for the core and apps API groups.
+- RBAC is read-only for the core API group with restricted resources.
 - Secrets are consumed via valueFrom: secretKeyRef.
 - Do not store tokens in plaintext in your repository!
 

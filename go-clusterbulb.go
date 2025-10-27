@@ -20,8 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+// Project: go-clusterbulb
 // Author: ClusterShed / Chris Mayenschein
-// Version: 0.1.0
+// Version: 0.0.2
 //
 // Description:
 // go-clusterbulb is a Kubernetes cluster health monitoring tool that integrates with Home Assistant to visually indicate the health status of the cluster using a smart bulb. It checks for node and pod health, warning events, and open GitHub pull requests, updating the bulb color accordingly.
@@ -35,14 +36,7 @@
 // Deploy go-clusterbulb as a pod within your Kubernetes cluster with the
 // necessary environment variables set for Home Assistant and GitHub access.
 //
-// # Project is setup to run in a base alpine image with gcompat installed
-//
-// Example Dockerfile:
-// FROM alpine:latest
-// RUN apk add --no-cache gcompat
-// COPY go-clusterbulb /go-clusterbulb
-// ENTRYPOINT ["/go-clusterbulb"]
-// Build the Docker image and deploy it to your cluster.
+// Project is setup to run in a base alpine image with gcompat installed
 //
 // Note: Ensure the pod has the necessary RBAC permissions to read nodes, pods,
 // and events in the cluster. This app will not run as root/superuser for security reasons.

@@ -66,7 +66,7 @@ spec:
           - name: HA_LIGHT_ENTITY_ID
             value: "light.cync_full_color_a19_5"  # adjust to your light entity
           - name: HA_LIGHT_BRIGHTNESS
-            value: "2"
+            value: "255"
           - name: GH_OWNER
             value: "clustershed"
           - name: GH_REPO
@@ -85,5 +85,4 @@ spec:
             limits:
               cpu: "200m"
               memory: "256Mi"
-          securityContext:
             allowPrivilegeEscalation: false

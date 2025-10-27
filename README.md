@@ -2,7 +2,7 @@
 
 A Kubernetes health monitor that talks through light.
 
-ClusterBulb is a small Go-based monitoring service that turns your Kubernetes cluster’s health into a visual signal using a smart bulb connected to Home Assistant.
+ClusterBulb is a small Go-based monitoring service that turns your Home-Labs Kubernetes cluster’s health into a visual signal using a smart bulb connected to Home Assistant.
 It watches cluster nodes, pods, and warning events, checks GitHub for open PRs, and updates a Home Assistant light entity to reflect the overall state.
 
 ![Myrmidon Soldier Holding a Light Bulb](https://raw.githubusercontent.com/clustershed/images/refs/heads/main/myrmidon-bulb-anim.webp)

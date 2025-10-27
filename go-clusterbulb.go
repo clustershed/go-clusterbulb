@@ -313,7 +313,6 @@ func clusterChecks() {
 	report.EventIssues = eventIssues
 	report.PullRequests = pullRequests
 	report.TotalIssues = len(nodeIssues) + len(podIssues) + len(eventIssues)
-	report.TotalIssues = len(nodeIssues) + len(podIssues) + len(eventIssues)
 
 	if report.TotalIssues == 0 {
 		report.ClusterState = "healthy"
@@ -380,6 +379,7 @@ func ghPullRequestsCheck() {
 
 	if len(prs) == 0 {
 		//fmt.Println("No open pull requests found.")
+		ghPRState = "none"
 		return
 	}
 

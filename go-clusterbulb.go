@@ -1,12 +1,11 @@
-
 // Project: go-clusterbulb
 // Author: ClusterShed / Chris Mayenschein
-// Version: 0.0.3
+// Version: 0.0.4
 //
 // Description:
-// go-clusterbulb is a Kubernetes cluster health monitoring tool that integrates with 
-// Home Assistant to visually indicate the health status of the cluster using a smart 
-// bulb. It checks for node and pod health, warning events, and open GitHub pull requests, 
+// go-clusterbulb is a Kubernetes cluster health monitoring tool that integrates with
+// Home Assistant to visually indicate the health status of the cluster using a smart
+// bulb. It checks for node and pod health, warning events, and open GitHub pull requests,
 // updating the bulb color accordingly.
 //
 //	Green: Healthy cluster
@@ -18,7 +17,7 @@
 // Deploy go-clusterbulb as a pod within your Kubernetes cluster with the
 // necessary environment variables set for Home Assistant and GitHub access.
 //
-// Project is setup to run in a base alpine image with gcompat installed
+// # Project is setup to run in a base alpine image with gcompat installed
 //
 // Note: Ensure the pod has the necessary RBAC permissions to read nodes, pods,
 // and events in the cluster. This app will not run as root/superuser for security reasons.
@@ -38,6 +37,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -177,6 +177,20 @@ func main() {
 
 	// Keep the main function running indefinitely
 	select {}
+}
+
+var errorCount int
+var errorLimit = 5 // change as needed
+func HandleError(msg string, err error) {
+	if err == nil {
+		return
+	}
+	errorCount++
+	fmt.Printf("%s %s %v\n", time.Now().Format(time.RFC3339), msg, err)
+	if errorCount >= errorLimit {
+		fmt.Printf("Error limit (%d) reached. Exiting.\n", errorLimit)
+		os.Exit(1)
+	}
 }
 
 // isSuperUser checks if the current user is root (uid 0)
@@ -329,8 +343,9 @@ func ghPullRequestsCheck() {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls?state=open", ghOwner, ghRepo)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		os.Exit(1)
+		HandleError("Error creating request:", err)
+		//os.Exit(1)
+		return
 	}
 
 	// Set Authorization header if token is provided (recommended)
@@ -343,20 +358,24 @@ func ghPullRequestsCheck() {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
-		os.Exit(1)
+		HandleError("Error sending request:", err)
+		//os.Exit(1)
+		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("GitHub API returned status: %s\n", resp.Status)
-		os.Exit(1)
+		//fmt.Printf("GitHub API returned status: %s\n", resp.Status)
+		HandleError("GitHub API returned status:", errors.New(resp.Status))
+		//os.Exit(1)
+		return
 	}
 
 	var prs []PullRequest
 	if err := json.NewDecoder(resp.Body).Decode(&prs); err != nil {
-		fmt.Println("Error decoding response:", err)
-		os.Exit(1)
+		HandleError("Error decoding response:", err)
+		//os.Exit(1)
+		return
 	}
 
 	if len(prs) == 0 {
@@ -368,7 +387,6 @@ func ghPullRequestsCheck() {
 	var issues []Issue
 	for _, pr := range prs {
 		//fmt.Printf("PR #%d: %s by %s\n", pr.Number, pr.Title, pr.User.Login)
-
 		issues = append(issues, Issue{Key: fmt.Sprintf("pr/%d", pr.Number), Type: "PullRequest", Message: pr.Title, Timestamp: time.Now()})
 	}
 	ghPRState = "none"

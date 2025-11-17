@@ -1,0 +1,51 @@
+name: Release Image to GHCR
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.3"
+
+      - name: Build Go binary
+        run: |
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o go-clusterbulb .
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: vars
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/go-clusterbulb:${{ steps.vars.outputs.VERSION }} \
+            -t ghcr.io/${{ github.repository_owner }}/go-clusterbulb:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/go-clusterbulb:${{ steps.vars.outputs.VERSION }}
+          docker push ghcr.io/${{ github.repository_owner }}/go-clusterbulb:latest
+

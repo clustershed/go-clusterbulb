@@ -90,6 +90,10 @@ spec:
                 key: gh-token
           - name: GH_PR_CHECK_INTERVAL
             value: "300"
+          - name: NTFY_URL
+            value: "http://ntfy.myrmidon-k3s"
+          - name: NTFY_TOPIC
+            value: "myrmidon-k3s"
           resources:
             requests:
               cpu: "27.5m"

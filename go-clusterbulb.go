@@ -389,8 +389,21 @@ func ghPullRequestsCheck() {
 		//fmt.Printf("PR #%d: %s by %s\n", pr.Number, pr.Title, pr.User.Login)
 		issues = append(issues, Issue{Key: fmt.Sprintf("pr/%d", pr.Number), Type: "PullRequest", Message: pr.Title, Timestamp: time.Now()})
 	}
-	ghPRState = "none"
+	//ghPRState = "none" // this line to be removed
 	if len(issues) > 0 {
+
+		// if current ghPRState is changing from none to open, send a ntfy message
+		if ghPRState == "none" {
+			ntfyOpts := NtfyOptions{
+				Title:    "ntfyTitle Text",
+				Priority: 3, // (required)
+			}
+			err := SendNtfyAlert(fmt.Sprintf("New open pull requests detected: %d", len(issues)), ntfyOpts)
+			if err != nil {
+				log.Printf("Error sending ntfy alert: %v", err)
+			}
+		}
+
 		ghPRState = "open"
 	}
 	pullRequests = issues
@@ -562,4 +575,83 @@ func clearIssue(key string) {
 	//log.Printf("✅ Issue resolved: %s", key)
 	delete(knownIssues, key)
 	//}
+}
+
+var ntfyUrl = ""                // os.Getenv("NTFY_URL")
+var ntfyTopic = ""              // os.Getenv("NTFY_TOPIC")
+var ntfyPriority = "high"       // os.Getenv("NTFY_PRIORITY") // low, default, high, urgent
+var ntfyTags = ""               // os.Getenv("NTFY_TAGS") // comma-separated list of tags
+var ntfyTitle = "Cluster Alert" // os.Getenv("NTFY_TITLE") // default: "Cluster Alert"
+
+var ntfyMessage = ""    // os.Getenv("NTFY_MESSAGE") // default: "An issue has been detected in the cluster."
+var ntfyEnabled = false // os.Getenv("NTFY_ENABLED") == "true"
+var ntfyMaxRetries = 3  // os.Getenv("NTFY_MAX_RETRIES") // default: 3
+var ntfyRetryDelay = 5  // os.Getenv("NTFY_RETRY_DELAY") // seconds, default: 5
+var ntfyLastSent time.Time
+var ntfyRateLimit = 60 // seconds, default: 60
+var ntfyErrorCount int
+var ntfyErrorLimit = 5  // default: 5
+var ntfyErrorDelay = 10 // seconds, default: 10
+var ntfyLastError time.Time
+
+type NtfyOptions struct {
+	Server   string
+	Topic    string
+	Title    string
+	Priority int    // 1–5 (ntfy standard)
+	Icon     string // URL or emoji
+	Tags     string // comma-separated tags (optional)
+}
+
+func SendNtfyAlert(message string, opts NtfyOptions) error {
+	if opts.Server == "" {
+		opts.Server = os.Getenv("NTFY_URL") // "https://ntfy.sh"
+	}
+	if opts.Server == "" {
+		// server is still empty, so just return without doing anything
+		return nil
+	}
+
+	if opts.Topic == "" {
+		opts.Server = os.Getenv("NTFY_TOPIC") // "clusterbulb"
+	}
+	if opts.Topic == "" {
+		return fmt.Errorf("ntfy topic cannot be empty")
+	}
+	if opts.Priority < 1 || opts.Priority > 5 {
+		return fmt.Errorf("priority must be between 1 and 5")
+	}
+
+	url := fmt.Sprintf("%s/%s", opts.Server, opts.Topic)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(message)))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Add headers
+	if opts.Title != "" {
+		req.Header.Set("Title", opts.Title)
+	}
+	req.Header.Set("Priority", fmt.Sprintf("%d", opts.Priority))
+
+	if opts.Icon != "" {
+		req.Header.Set("Icon", opts.Icon)
+	}
+	if opts.Tags != "" {
+		req.Header.Set("Tags", opts.Tags)
+	}
+
+	// Send request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send ntfy request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		return fmt.Errorf("ntfy returned unexpected status: %s", resp.Status)
+	}
+
+	return nil
 }

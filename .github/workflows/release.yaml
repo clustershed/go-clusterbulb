@@ -48,4 +48,12 @@ jobs:
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/go-clusterbulb:${{ steps.vars.outputs.VERSION }}
           docker push ghcr.io/${{ github.repository_owner }}/go-clusterbulb:latest
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.VERSION }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

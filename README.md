@@ -38,8 +38,12 @@ ClusterBulb is ambient observability. A simple, physical indicator of cluster st
 |              `GH_REPO` | GitHub repository name                                              |
 |             `GH_TOKEN` | GitHub token (optional but recommended to avoid rate limits)        |
 | `GH_PR_CHECK_INTERVAL` | Seconds between PR checks (default 300)                             |
+|             `NTFY_URL` | URL for the ntfy service to send messages to (optional)             |
+|           `NTFY_TOPIC` | Topic to the ntfy service                                           |
 
 Secrets `HA_TOKEN` and `GH_TOKEN` should be provided via a Kubernetes Secret named clusterbulb-secrets.
+
+
 
 # 🛡 Security notes
 

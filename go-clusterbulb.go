@@ -613,7 +613,7 @@ func SendNtfyAlert(message string, opts NtfyOptions) error {
 	}
 
 	if opts.Topic == "" {
-		opts.Server = os.Getenv("NTFY_TOPIC") // "clusterbulb"
+		opts.Topic = os.Getenv("NTFY_TOPIC") // "clusterbulb"
 	}
 	if opts.Topic == "" {
 		return fmt.Errorf("ntfy topic cannot be empty")

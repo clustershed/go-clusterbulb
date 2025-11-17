@@ -385,9 +385,11 @@ func ghPullRequestsCheck() {
 	}
 
 	var issues []Issue
+	var latestPR Issue
 	for _, pr := range prs {
 		//fmt.Printf("PR #%d: %s by %s\n", pr.Number, pr.Title, pr.User.Login)
 		issues = append(issues, Issue{Key: fmt.Sprintf("pr/%d", pr.Number), Type: "PullRequest", Message: pr.Title, Timestamp: time.Now()})
+		latestPR = Issue{Key: fmt.Sprintf("pr/%d", pr.Number), Message: pr.Title}
 	}
 	//ghPRState = "none" // this line to be removed
 	if len(issues) > 0 {
@@ -395,10 +397,10 @@ func ghPullRequestsCheck() {
 		// if current ghPRState is changing from none to open, send a ntfy message
 		if ghPRState == "none" {
 			ntfyOpts := NtfyOptions{
-				Title:    "ntfyTitle Text",
+				Title:    fmt.Sprintf("Pull Requests: %d", len(issues)),
 				Priority: 3, // (required)
 			}
-			err := SendNtfyAlert(fmt.Sprintf("New open pull requests detected: %d", len(issues)), ntfyOpts)
+			err := SendNtfyAlert(fmt.Sprintf("Latest: #%s %s", latestPR.Key, latestPR.Message), ntfyOpts)
 			if err != nil {
 				log.Printf("Error sending ntfy alert: %v", err)
 			}

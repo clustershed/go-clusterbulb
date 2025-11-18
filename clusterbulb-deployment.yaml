@@ -66,7 +66,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: clusterbulb
-          image: ghcr.io/clustershed/go-clusterbulb:v0.0.3
+          image: ghcr.io/clustershed/go-clusterbulb:v0.0.9
           env:
           - name: HA_TOKEN
             valueFrom:
@@ -74,9 +74,9 @@ spec:
                 name: clusterbulb-secrets
                 key: ha-token
           - name: HA_URL
-            value: "http://192.168.42.201:8123"  # adjust to your HA URL
+            value: "http://home-assistant:8123"  # adjust to your HA URL
           - name: HA_LIGHT_ENTITY_ID
-            value: "light.cync_full_color_a19_5"  # adjust to your light entity
+            value: "light.cync_full_color_a19"  # adjust to your light entity
           - name: HA_LIGHT_BRIGHTNESS
             value: "2"
           - name: GH_OWNER
@@ -91,9 +91,9 @@ spec:
           - name: GH_PR_CHECK_INTERVAL
             value: "300"
           - name: NTFY_URL
-            value: "http://ntfy.myrmidon-k3s"
+            value: "http://ntfy"
           - name: NTFY_TOPIC
-            value: "myrmidon-k3s"
+            value: "clusterbulb-alerts"
           resources:
             requests:
               cpu: "27.5m"
